@@ -64,6 +64,8 @@ export default function MessagesList({
 	return (
 		<Box
 			ref={messagesContainerRef}
+			display={'flex'}
+			flex={1}
 		>
 			{messages.map(message => (
 				<ChatMessage

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Database } from 'firebase/database';
 
 import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -99,6 +100,7 @@ export default function RoomsList({ db, activeRoom, rooms }: RoomsListProps) {
 				))}
 			</List>
 
+            <Divider sx={{ borderColor: 'black' }} />
 			{/* Create Room Section. Maybe a dialog? */}
 			<Button
 				variant={'contained'}

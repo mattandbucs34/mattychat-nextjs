@@ -1,18 +1,24 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { FormEvent, FormEventHandler, useCallback, useEffect, useState } from 'react';
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInWithPopup, GoogleAuthProvider, AuthError, User } from 'firebase/auth';
-import { endBefore, get, getDatabase, limitToLast, onValue, orderByChild, query, ref } from 'firebase/database';
+import { endBefore, get, getDatabase, limitToLast, onValue, orderByChild, push, query, ref, serverTimestamp } from 'firebase/database';
+
+import MessagesView from '@/components/MessagesView';
+import RoomsList from '@/components/RoomsList';
 import UserAction from '@/components/UserAction';
+
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
+import Divider from '@mui/material/Divider';
+import Grid from '@mui/material/Grid';
+import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import RoomsList from '@/components/RoomsList';
 
 import { IRoom } from '@/interfaces/IRoom';
 import { IChatMessage } from '@/interfaces/IChatMessage';
-import MessagesView from '@/components/MessagesView';
+import { grey } from '@mui/material/colors';
 
 // Firebase config
 const firebaseConfig = {
@@ -199,36 +205,75 @@ export default function Home() {
         }
     }, [activeRoom, oldestMessageTimestamp, isLoadingMessages, hasMoreMessages]);
 
+    const handleNewMessageSubmit = (message: string) => {
+        const messagesRef = ref(firebaseDb, 'messages');
+        push(messagesRef, {
+            content: message,
+            sentAt: serverTimestamp(),
+            username: user?.displayName || 'Guest',
+            roomId: activeRoom?.id,
+        })
+    }
+
     return (
-        <Container>
-            <Box component={'header'}>
-                <Typography variant={'h1'}>MattChat</Typography>
-            </Box>
+        <Container maxWidth={'lg'}>
+            <Grid
+                container
+                direction={'column'}
+                minHeight={'100vh'}
+            >
+                <Box
+                    component={'header'}
+                    pb={2}
+                    sx={{ borderBottom: '1px solid black' }}
+                >
+                    <Typography variant={'h1'}>
+                        MattyChat-chat-chat
+                    </Typography>
+                </Box>
 
-            {/* side menu */}
-            <Box>
-                <UserAction
-                    user={user}
-                    handleAuthAction={handleAuthAction}
-                />
+                <Grid container flex={1} gap={4}>
+                    {/* side menu */}
+                    <Stack
+                        maxWidth={'14rem'}
+                        width={'100%'}
+                        gap={1}
+                        pt={2}
+                    >
+                        <UserAction
+                            user={user}
+                            handleAuthAction={handleAuthAction}
+                        />
 
-                {/* Room List */}
-                <RoomsList
-                    db={firebaseDb}
-                    activeRoom={activeRoom}
-                    rooms={rooms}
-                />
-            </Box>
+                        {/* Room List */}
+                        <RoomsList
+                            db={firebaseDb}
+                            activeRoom={activeRoom}
+                            rooms={rooms}
+                        />
+                    </Stack>
 
-            <Box>
-                {/* chat messages */}
-                <MessagesView
-                    hasMoreMessages={hasMoreMessages}
-                    isLoadingMessages={isLoadingMessages}
-                    messages={messages}
-                    loadMoreMessages={loadMoreMessages}
-                />
-            </Box>
+                    <Divider
+                        orientation={'vertical'}
+                        flexItem
+                        sx={{ borderColor: grey[400] }}
+                    />
+
+                    <Box display={'flex'} flex={1}>
+                        {/* chat messages */}
+                        <MessagesView
+                            hasMoreMessages={hasMoreMessages}
+                            isLoadingMessages={isLoadingMessages}
+                            messages={messages}
+                            room={activeRoom}
+                            handleNewMessageSubmit={handleNewMessageSubmit}
+                            loadMoreMessages={loadMoreMessages}
+                        />
+                    </Box>
+
+                </Grid>
+
+            </Grid>
         </Container>
     );
 }

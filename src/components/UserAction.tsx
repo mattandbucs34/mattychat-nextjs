@@ -1,6 +1,8 @@
 'use client';
-import Box from '@mui/material/Box';
+
 import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
+import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { User } from 'firebase/auth';
 
@@ -12,7 +14,7 @@ type UserActionProps = {
 export default function UserAction({ user, handleAuthAction }: UserActionProps) {
 
 	return (
-		<Box>
+		<Stack gap={1}>
 			<Typography variant={'body1'}>
 				{`Welcome ${user ?? 'Guest'}`}
 			</Typography>
@@ -22,6 +24,7 @@ export default function UserAction({ user, handleAuthAction }: UserActionProps) 
 			>
 				{user ? 'Sign Out' : 'Sign In'}	
 			</Button>
-		</Box>
+			<Divider sx={{ borderColor: 'black' }} />
+		</Stack>
 	);
 }
