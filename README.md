@@ -1,36 +1,81 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# MattyChat-chat-chat
 
-## Getting Started
+Simple real-time chat application
 
-First, run the development server:
+## Description {#description}
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+MattyChat-chat-chat is a simple SPA and real-time chat application built with [NextJS](https://nextjs.org/) and [Firebase](https://firebase.google.com/). Users can create new rooms, edit room names and delete rooms. Users can log in using Firebase's authentication for more personalization with messages.
+
+## Installation and Setup {#installation}
+
+### Firebase setup {#firebase-setup}
+
+In order to run this application locally, a Firebase account is needed.
+
+1. Navigate to <https://console.firebase.google.com>
+2. Create a new Firebase project
+3. Once project is created, select **Build** from the menu on the left hand side.
+4. From the Build menu, select Realtime Database
+5. Create the database
+
+### Environment variables {#environment-variables}
+
+Environment variables from Firebase will be needed to run this application.
+
+Add a `.env` file to the root directory if one is not present already.
+
+1. In the Firebase console, navigate to Project Overview (top left corner) and click the settings icon.
+2. From the menu select Project Settings
+3. In the `Your apps` section, locate the block for `firebaseConfig`.
+4. Use these values to populate the necessary environment variables in a `.env` file.
+
+Example:
+
+```text
+
+NEXT_PUBLIC_FIREBASE_API_KEY=firebaseConfig.apiKey
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=firebaseConfig.authDomain
+NEXT_PUBLIC_FIREBASE_DATABASE_URL=firebaseConfig.databaseUrl
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=firebaseConfig.projectId
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=firebaseConfig.storageBucket
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=firebaseConfig.messagingSenderId
+NEXT_PUBLIC_FIREBASE_APP_ID=firebaseConfig.appId
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Clone the repository {#clone-repo}
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+`git clone https://github.com/mattandbucs34/mattychat-nextjs.git`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+then
 
-## Learn More
+`cd mattychat-nextjs`
 
-To learn more about Next.js, take a look at the following resources:
+### Install packages {#install-packages}
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+This application uses pnpm. If pnpm is not installed:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+`npm install - pnpm`
 
-## Deploy on Vercel
+Once pnpm is installed or if it is already installed:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+`pnpm install`
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Run locally {#run-locally}
+
+`pnpm run dev`
+
+then visit <http://localhost:3000> in your browser.
+
+## Key Features {#key-features}
+
+- Real-time messaging
+- Chat room creation, editing and deletion
+- Firebase authentication
+
+## Tech Stack {#tech-stack}
+
+- NextJS
+- Typescript
+- Tailwind CSS
+- Material UI
+- Firebase

@@ -1,6 +1,6 @@
 'use client';
 
-import { FormEvent, FormEventHandler, useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInWithPopup, GoogleAuthProvider, AuthError, User } from 'firebase/auth';
 import { endBefore, get, getDatabase, limitToLast, onValue, orderByChild, push, query, ref, serverTimestamp } from 'firebase/database';
