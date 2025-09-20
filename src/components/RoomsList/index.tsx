@@ -18,6 +18,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import { IRoom } from '@/interfaces/IRoom';
 import { RoomsService } from '@/services/roomsService';
 import RoomDialog from './RoomDialog';
+import { blue } from '@mui/material/colors';
 
 export const CLOSED = 'closed' as const;
 export const CREATING = 'creating' as const;
@@ -27,6 +28,7 @@ type RoomsListProps = {
 	db: Database;
 	activeRoom: IRoom | null;
 	rooms: IRoom[];
+	handleRoomSelect: (_room: IRoom) => void
 };
 
 export type DialogMode =
@@ -34,7 +36,12 @@ export type DialogMode =
 	| { type: typeof CREATING; }
 	| { type: typeof EDITING; roomId: string; currentName: string; };
 
-export default function RoomsList({ db, activeRoom, rooms }: RoomsListProps) {
+export default function RoomsList({
+	db, 
+	activeRoom, 
+	rooms,
+	handleRoomSelect,
+ }: RoomsListProps) {
 	// const [isOpen, setIsOpen] = useState(false);
 	// const [roomToEdit, setRoomToEdit] = useState<IRoom | null>(null);
 	const roomsService = new RoomsService(db);
@@ -74,8 +81,13 @@ export default function RoomsList({ db, activeRoom, rooms }: RoomsListProps) {
 					<ListItem
 						key={room.id}
 						disableGutters
+						sx={{
+							...(activeRoom?.id === room.id && { backgroundColor: blue[100]})
+						}}
 					>
-						<ListItemButton>
+						<ListItemButton
+							onClick={() => handleRoomSelect(room)}
+						>
 							{room.name}
 						</ListItemButton>
 						{/*

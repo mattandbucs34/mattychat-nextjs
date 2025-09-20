@@ -53,7 +53,13 @@ export default function MessagesList({
 
 	if (messages.length === 0 && !isLoadingMessages) {
 		return (
-            <Box sx={{ textAlign: 'center', py: 4 }}>
+            <Box 
+				sx={{
+					textAlign: 'center',
+					py: 4,
+					flexGrow: 1
+				}}
+			>
                 <Typography variant={'body1'} color={'text.secondary'}>
                     No messages yet. Start the conversation!
                 </Typography>
@@ -66,6 +72,7 @@ export default function MessagesList({
 			ref={messagesContainerRef}
 			display={'flex'}
 			flex={1}
+			id={'message-box'}
 		>
 			{messages.map(message => (
 				<ChatMessage

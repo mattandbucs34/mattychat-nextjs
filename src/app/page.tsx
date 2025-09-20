@@ -215,6 +215,10 @@ export default function Home() {
         })
     }
 
+    const handleRoomSelect = (room: IRoom) => {
+        setActiveRoom(room);
+    }
+
     return (
         <Container maxWidth={'lg'}>
             <Grid
@@ -250,6 +254,7 @@ export default function Home() {
                             db={firebaseDb}
                             activeRoom={activeRoom}
                             rooms={rooms}
+                            handleRoomSelect={handleRoomSelect}
                         />
                     </Stack>
 
