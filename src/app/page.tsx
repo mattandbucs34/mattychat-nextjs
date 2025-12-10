@@ -83,7 +83,7 @@ export default function Home() {
 
     useEffect(() => {
         if (activeRoom) {
-            loadIniitalMessages(activeRoom.id);
+            loadInitialMessages(activeRoom.id);
         } else {
             setMessages([]);
             setHasMoreMessages(true);
@@ -116,13 +116,13 @@ export default function Home() {
     function handleAuthAction() {
         if (!user) {
             signInWithGoogle();
+        } else {
+            // sign in logic
+            signOut();
         }
-
-        // sign in logic
-        signOut();
     }
 
-    async function loadIniitalMessages(roomId: string) {
+    async function loadInitialMessages(roomId: string) {
         setIsLoadingMessages(true);
         setMessages([]);
         setOldestMessageTimestamp(null);
@@ -137,6 +137,11 @@ export default function Home() {
             );
 
             const snapshot = await get(messagesQuery);
+            if (snapshot.exists()) {
+                console.log(snapshot.val());
+            } else {
+                console.log("No data available");
+            }
             const data = snapshot.val();
 
             if (data) {
@@ -144,7 +149,7 @@ export default function Home() {
                     id: key,
                     ...data[key],
                 }))
-                    .sort((a, b) => b.sentAt = a.sentAt);
+                    .sort((a, b) => b.sentAt - a.sentAt);
 
                 setMessages(messagesArray);
 
@@ -188,7 +193,7 @@ export default function Home() {
                     id: key,
                     ...data[key],
                 }))
-                    .sort((a, b) => b.sentAt = a.sentAt);
+                    .sort((a, b) => b.sentAt - a.sentAt);
 
                 if (nextMessagesArray.length > 0) {
                     setMessages(prevMessages => [...prevMessages, ...nextMessagesArray]);
@@ -206,14 +211,14 @@ export default function Home() {
     }, [activeRoom, oldestMessageTimestamp, isLoadingMessages, hasMoreMessages]);
 
     const handleNewMessageSubmit = (message: string) => {
-        const messagesRef = ref(firebaseDb, 'messages');
+        const messagesRef = ref(firebaseDb, `messages/${activeRoom?.id}`);
         push(messagesRef, {
             content: message,
             sentAt: serverTimestamp(),
             username: user?.displayName || 'Guest',
             roomId: activeRoom?.id,
-        })
-    }
+        });
+    };
 
     return (
         <Container maxWidth={'lg'}>
@@ -250,6 +255,7 @@ export default function Home() {
                             db={firebaseDb}
                             activeRoom={activeRoom}
                             rooms={rooms}
+                            setActiveRoom={setActiveRoom}
                         />
                     </Stack>
 
