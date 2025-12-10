@@ -9,20 +9,20 @@ import { User } from 'firebase/auth';
 type UserActionProps = {
 	user: User | null;
 	handleAuthAction: () => void;
-}
+};
 
 export default function UserAction({ user, handleAuthAction }: UserActionProps) {
 
 	return (
 		<Stack gap={1}>
 			<Typography variant={'body1'}>
-				{`Welcome ${user ?? 'Guest'}`}
+				{`Welcome ${user?.displayName ?? 'Guest'}`}
 			</Typography>
 			<Button
 				variant={'contained'}
 				onClick={handleAuthAction}
 			>
-				{user ? 'Sign Out' : 'Sign In'}	
+				{user ? 'Sign Out' : 'Sign In'}
 			</Button>
 			<Divider sx={{ borderColor: 'black' }} />
 		</Stack>
