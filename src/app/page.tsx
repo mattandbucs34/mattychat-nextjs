@@ -82,13 +82,27 @@ export default function Home() {
     }, []);
 
     useEffect(() => {
-        if (activeRoom) {
-            loadInitialMessages(activeRoom.id);
-        } else {
-            setMessages([]);
-            setHasMoreMessages(true);
-            setOldestMessageTimestamp(null);
-        }
+        const messagesRef = ref(firebaseDb, `messages/${activeRoom?.id}`);
+        const messagesQuery = query(
+            messagesRef,
+            orderByChild('sentAt'),
+            limitToLast(MAX_MESSAGES_LIMIT)
+        );
+        const unsubscribe = onValue(messagesQuery, (snapshot) => {
+            const messagesArray: IChatMessage[] = []
+
+            snapshot.forEach((childSnapshot) => {
+                messagesArray.push({
+                    id: childSnapshot.key,
+                    ...childSnapshot.val()
+                });
+            });
+
+            console.log('Messages Array: ', messagesArray);
+            setMessages(messagesArray);
+        });
+
+        return () => unsubscribe();
     }, [activeRoom]);
 
     // handle sign in and sign out
@@ -119,53 +133,6 @@ export default function Home() {
         } else {
             // sign in logic
             signOut();
-        }
-    }
-
-    async function loadInitialMessages(roomId: string) {
-        setIsLoadingMessages(true);
-        setMessages([]);
-        setOldestMessageTimestamp(null);
-        setHasMoreMessages(true);
-
-        try {
-            const messagesRef = ref(firebaseDb, `messages/${roomId}`);
-            const messagesQuery = query(
-                messagesRef,
-                orderByChild('sentAt'),
-                limitToLast(MAX_MESSAGES_LIMIT)
-            );
-
-            const snapshot = await get(messagesQuery);
-            if (snapshot.exists()) {
-                console.log(snapshot.val());
-            } else {
-                console.log("No data available");
-            }
-            const data = snapshot.val();
-
-            if (data) {
-                const messagesArray = Object.keys(data).map(key => ({
-                    id: key,
-                    ...data[key],
-                }))
-                    .sort((a, b) => b.sentAt - a.sentAt);
-
-                setMessages(messagesArray);
-
-                if (messagesArray.length > 0) {
-                    setOldestMessageTimestamp(messagesArray[messagesArray.length - 1].sentAt);
-                }
-
-                setHasMoreMessages(messagesArray.length === MAX_MESSAGES_LIMIT);
-            } else {
-                setMessages([]);
-                setHasMoreMessages(false);
-            }
-        } catch (error) {
-            console.error('Error loading messages:', error);
-        } finally {
-            setIsLoadingMessages(false);
         }
     }
 

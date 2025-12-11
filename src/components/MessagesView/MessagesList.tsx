@@ -5,8 +5,10 @@ import { IChatMessage } from '@/interfaces/IChatMessage';
 import ChatMessage from './ChatMessage';
 
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
+import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { Button, CircularProgress } from '@mui/material';
 
 type MessagesListProps = {
 	hasMoreMessages: boolean;
@@ -15,8 +17,8 @@ type MessagesListProps = {
 	loadMoreMessages: () => void;
 };
 
-export default function MessagesList({ 
-	hasMoreMessages, 
+export default function MessagesList({
+	hasMoreMessages,
 	isLoadingMessages,
 	messages,
 	loadMoreMessages
@@ -46,26 +48,32 @@ export default function MessagesList({
 
 		return () => {
 			if (loadMoreButton) {
-                observer.unobserve(loadMoreButton);
-            }
+				observer.unobserve(loadMoreButton);
+			}
 		};
 	}, [hasMoreMessages, isLoadingMessages, loadMoreMessages]);
 
 	if (messages.length === 0 && !isLoadingMessages) {
 		return (
-            <Box sx={{ textAlign: 'center', py: 4 }}>
-                <Typography variant={'body1'} color={'text.secondary'}>
-                    No messages yet. Start the conversation!
-                </Typography>
-            </Box>
-        );
-    }
+			<Box sx={{ textAlign: 'center', py: 4 }}>
+				<Typography variant={'body1'} color={'text.secondary'}>
+					No messages yet. Start the conversation!
+				</Typography>
+			</Box>
+		);
+	}
 
 	return (
-		<Box
+		<Stack
 			ref={messagesContainerRef}
 			display={'flex'}
 			flex={1}
+			spacing={3}
+			border={'1px solid rgba(0 0 0 / 0.23)'}
+			borderRadius={2}
+			mb={3}
+			p={2}
+			justifyContent={'flex-end'}
 		>
 			{messages.map(message => (
 				<ChatMessage
@@ -90,6 +98,6 @@ export default function MessagesList({
 					)}
 				</Box>
 			)}
-		</Box>
+		</Stack>
 	);
 }
