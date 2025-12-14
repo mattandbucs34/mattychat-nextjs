@@ -28,7 +28,7 @@ type RoomsListProps = {
 	db: Database;
 	activeRoom: IRoom | null;
 	rooms: IRoom[];
-	handleRoomSelect: (_room: IRoom) => void
+	setActiveRoom: (room: IRoom | null) => void;
 };
 
 export type DialogMode =
@@ -36,12 +36,7 @@ export type DialogMode =
 	| { type: typeof CREATING; }
 	| { type: typeof EDITING; roomId: string; currentName: string; };
 
-export default function RoomsList({
-	db, 
-	activeRoom, 
-	rooms,
-	handleRoomSelect,
- }: RoomsListProps) {
+export default function RoomsList({ db, activeRoom, rooms, setActiveRoom }: RoomsListProps) {
 	// const [isOpen, setIsOpen] = useState(false);
 	// const [roomToEdit, setRoomToEdit] = useState<IRoom | null>(null);
 	const roomsService = new RoomsService(db);
@@ -82,11 +77,11 @@ export default function RoomsList({
 						key={room.id}
 						disableGutters
 						sx={{
-							...(activeRoom?.id === room.id && { backgroundColor: blue[100]})
+							...(activeRoom?.id === room.id && { backgroundColor: blue[100] })
 						}}
 					>
 						<ListItemButton
-							onClick={() => handleRoomSelect(room)}
+							onClick={() => setActiveRoom(room)}
 						>
 							{room.name}
 						</ListItemButton>
@@ -112,7 +107,7 @@ export default function RoomsList({
 				))}
 			</List>
 
-            <Divider sx={{ borderColor: 'black' }} />
+			<Divider sx={{ borderColor: 'black' }} />
 			{/* Create Room Section. Maybe a dialog? */}
 			<Button
 				variant={'contained'}

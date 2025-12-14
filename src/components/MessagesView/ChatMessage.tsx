@@ -9,7 +9,17 @@ type ChatMessageProps = {
 export default function ChatMessage({ message }: ChatMessageProps) {
 	const { username, content, sentAt } = message;
 	return (
-		<Box>
+		<Box
+			display={'flex'}
+			flexDirection={'column'}
+			sx={{
+				backgroundColor: 'lightblue',
+				p: 2,
+				borderRadius: 2,
+				width: 'fit-content',
+				maxWidth: '100%'
+			}}
+		>
 			<Typography variant={'body1'}>
 				{content}
 			</Typography>

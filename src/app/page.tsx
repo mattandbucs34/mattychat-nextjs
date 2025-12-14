@@ -82,13 +82,27 @@ export default function Home() {
     }, []);
 
     useEffect(() => {
-        if (activeRoom) {
-            loadIniitalMessages(activeRoom.id);
-        } else {
-            setMessages([]);
-            setHasMoreMessages(true);
-            setOldestMessageTimestamp(null);
-        }
+        const messagesRef = ref(firebaseDb, `messages/${activeRoom?.id}`);
+        const messagesQuery = query(
+            messagesRef,
+            orderByChild('sentAt'),
+            limitToLast(MAX_MESSAGES_LIMIT)
+        );
+        const unsubscribe = onValue(messagesQuery, (snapshot) => {
+            const messagesArray: IChatMessage[] = [];
+
+            snapshot.forEach((childSnapshot) => {
+                messagesArray.push({
+                    id: childSnapshot.key,
+                    ...childSnapshot.val()
+                });
+            });
+
+            console.log('Messages Array: ', messagesArray);
+            setMessages(messagesArray);
+        });
+
+        return () => unsubscribe();
     }, [activeRoom]);
 
     // handle sign in and sign out
@@ -116,51 +130,9 @@ export default function Home() {
     function handleAuthAction() {
         if (!user) {
             signInWithGoogle();
-        }
-
-        // sign in logic
-        signOut();
-    }
-
-    async function loadIniitalMessages(roomId: string) {
-        setIsLoadingMessages(true);
-        setMessages([]);
-        setOldestMessageTimestamp(null);
-        setHasMoreMessages(true);
-
-        try {
-            const messagesRef = ref(firebaseDb, `messages/${roomId}`);
-            const messagesQuery = query(
-                messagesRef,
-                orderByChild('sentAt'),
-                limitToLast(MAX_MESSAGES_LIMIT)
-            );
-
-            const snapshot = await get(messagesQuery);
-            const data = snapshot.val();
-
-            if (data) {
-                const messagesArray = Object.keys(data).map(key => ({
-                    id: key,
-                    ...data[key],
-                }))
-                    .sort((a, b) => b.sentAt = a.sentAt);
-
-                setMessages(messagesArray);
-
-                if (messagesArray.length > 0) {
-                    setOldestMessageTimestamp(messagesArray[messagesArray.length - 1].sentAt);
-                }
-
-                setHasMoreMessages(messagesArray.length === MAX_MESSAGES_LIMIT);
-            } else {
-                setMessages([]);
-                setHasMoreMessages(false);
-            }
-        } catch (error) {
-            console.error('Error loading messages:', error);
-        } finally {
-            setIsLoadingMessages(false);
+        } else {
+            // sign in logic
+            signOut();
         }
     }
 
@@ -188,7 +160,7 @@ export default function Home() {
                     id: key,
                     ...data[key],
                 }))
-                    .sort((a, b) => b.sentAt = a.sentAt);
+                    .sort((a, b) => b.sentAt - a.sentAt);
 
                 if (nextMessagesArray.length > 0) {
                     setMessages(prevMessages => [...prevMessages, ...nextMessagesArray]);
@@ -206,18 +178,18 @@ export default function Home() {
     }, [activeRoom, oldestMessageTimestamp, isLoadingMessages, hasMoreMessages]);
 
     const handleNewMessageSubmit = (message: string) => {
-        const messagesRef = ref(firebaseDb, 'messages');
+        const messagesRef = ref(firebaseDb, `messages/${activeRoom?.id}`);
         push(messagesRef, {
             content: message,
             sentAt: serverTimestamp(),
             username: user?.displayName || 'Guest',
             roomId: activeRoom?.id,
-        })
-    }
+        });
+    };
 
     const handleRoomSelect = (room: IRoom) => {
         setActiveRoom(room);
-    }
+    };
 
     return (
         <Container maxWidth={'lg'}>
@@ -254,7 +226,7 @@ export default function Home() {
                             db={firebaseDb}
                             activeRoom={activeRoom}
                             rooms={rooms}
-                            handleRoomSelect={handleRoomSelect}
+                            setActiveRoom={setActiveRoom}
                         />
                     </Stack>
 
